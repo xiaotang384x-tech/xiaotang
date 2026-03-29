@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+.portfolio-header-img {
+    width: 120%;
+    height: auto;
+    display: block;
+    margin-bottom: -60px;
+}<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周夏婷 | Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&family=Zhi+Mang+Xing&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cream: #F5EFE6;
+            --bg-blue: #A7C5D6;
+            --bg-pink: #F4D3D3;
+            --text-dark: #3A3532;
+            --red-vintage: #C13A3A;
+            --blue-vintage: #6B8EAD;
+            --yellow-vintage: #EEDB9A;
+            --brown-vintage: #7b4f25;
+            --font-hand: 'ZCOOL KuaiLe', cursive;
+            --font-body: 'Noto Sans SC', sans-serif;
+            --font-cursive: 'Zhi Mang Xing', cursive;
+            --font-serif: 'DM Serif Display', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-dark);
+            background-color: var(--bg-blue);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 主体波浪纸张容器 */
+        .main-paper {
+            max-width: 95vw;
+            margin: 0 auto;
+            background-color: var(--bg-cream);
+            position: relative;
+            min-height: 100vh;
+            /* 纸质颗粒感 */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-blend-mode: overlay;
+            background-size: 100px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* 两侧波浪边缘 (使用 SVG mask) */
+        .wavy-edge {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            /* 优化：简化渐变计算，减少重绘成本 */
+            background-image: radial-gradient(circle at 10px 10px, var(--bg-blue) 10px, transparent 10.5px);
+            background-size: 20px 20px;
+            background-repeat: repeat-y;
+            z-index: 10;
+            pointer-events: none; /* 防止遮挡点击 */
+        }
+        .wavy-left { left: -10px; background-position: left center; }
+        .wavy-right { right: -10px; background-position: right center; transform: rotate(180deg); }
+
+        .container {
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 顶部导航条 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            /* 左右 padding：屏幕一半 减去 内容区一半(95vw的一半是47.5vw) 再加上内容区内部的 padding 40px */
+            padding: 12px calc(50vw - 47.5vw + 40px);
+            background-color: var(--bg-cream);
+            border-bottom: 1px dashed rgba(0,0,0,0.1);
+            z-index: 9999; /* 确保层级最高 */
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        /* 滚动时的导航栏样式 */
+        .navbar.scrolled {
+            padding: 8px calc(50vw - 47.5vw + 40px);
+            background-color: rgba(253, 251, 247, 0.95); /* 半透明背景 */
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-bottom: none;
+        }
+        
+        .logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* 胶带 */
+        .tape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px);
+            z-index: 5;
+        }
+        .tape-1 { width: 120px; height: 30px; top: -15px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
+        .tape-2 { width: 80px; height: 25px; top: -10px; right: -20px; transform: rotate(45deg); }
+
+        /* 拍立得 */
+        .polaroid {
+            background: white;
+            padding: 12px 12px 45px 12px;
+            box-shadow: 2px 5px 15px rgba(0,0,0,0.08);
+            position: relative;
+            transform: rotate(-3deg);
+            transition: transform 0.3s ease;
+        }
+        .polaroid:hover { transform: rotate(0deg) scale(1.02); z-index: 10; }
+        .polaroid img { width: 100%; height: auto; display: block; border: 1px solid #eee; }
+        .polaroid-text {
+            position: absolute;
+            bottom: 12px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-family: var(--font-cursive);
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+
+        /* --- Hero 区域 --- */
+        .hero {
+            padding: 160px 0 200px;
+            text-align: center;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .glow-effect {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(167, 197, 214, 0.18) 0%, rgba(107, 142, 173, 0.1) 50%, transparent 80%);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(35px);
+            left: -200px;
+            top: -200px;
+            mix-blend-mode: multiply;
+        }
+        .hero-text-container {
+            position: relative;
+            z-index: 5;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .highlight-text {
+            color: var(--blue-vintage);
+            position: relative;
+            display: inline-block;
+        }
+        .highlight-text::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: -5px;
+            right: -5px;
+            height: 15px;
+            background: rgba(238, 219, 154, 0.5); /* yellow-vintage */
+            z-index: -1;
+            transform: rotate(-2deg);
+        }
+        
+        .hero-decorations {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .convo-box {
+            position: absolute;
+            background: var(--red-vintage);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px; /* 胶囊形状 */
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+            white-space: nowrap;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 增加弹性过渡效果 */
+            pointer-events: auto; /* 允许鼠标事件 */
+        }
+
+        .convo-box:hover {
+            transform: scale(1.1) rotate(var(--hover-rotate, 0deg));
+        }
+
+        .convo-box.wiggle {
+            animation: convoWiggle 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        @keyframes convoWiggle {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-12deg) scale(1.05); }
+            40% { transform: rotate(10deg) scale(1.05); }
+            60% { transform: rotate(-8deg) scale(1.05); }
+            80% { transform: rotate(5deg) scale(1.05); }
+        }
+
+        .convo-box::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 8px 8px 8px;
+            border-color: transparent transparent var(--red-vintage) transparent;
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* 示例位置 */
+        .convo-1 { top: 20%; left: 15%; transform: rotate(-8deg); }
+
+.portfolio-header-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: -60px;
+}.portfolio-header-img {
+    width: 130%;
+    height: auto;
+    display: block;
+    margin-bottom: -20px;
+}        .convo-2 { top: 40%; right: 10%; transform: rotate(5deg); }
+
+        .convo-3 { bottom: 20%; left: 18%; transform: rotate(3deg); }
+
+        .hero-img-tag {
+            position: absolute;
+            max-width: 150px;
+            height: auto;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+
+        .hero-img-tag:hover {
+            animation: imgShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        @keyframes imgShake {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            20% { transform: rotate(-12deg) scale(1.1); }
+            40% { transform: rotate(10deg) scale(1.1); }
+            60% { transform: rotate(-8deg) scale(1.1); }
+            80% { transform: rotate(5deg) scale(1.1); }
+        }
+
+        @keyframes imgEntrance {
+            0% { opacity: 0; transform: scale(0.5) rotate(-20deg); }
+            60% { opacity: 1; transform: scale(1.1) rotate(5deg); }
+            80% { transform: rotate(-3deg) scale(1.05); }
+            100% { opacity: 1; transform: rotate(0deg) scale(1); }
+        }
+
+        .hero-img-tag.wiggle {
+            animation: imgEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .hero-img-tag:nth-child(3) { top: 20%; left: 15%; transform: rotate(-8deg); animation-delay: 0.1s; }
+        .hero-img-tag:nth-child(4) { top: 40%; right: 10%; transform: rotate(5deg); animation-delay: 0.2s; }
+        .hero-img-tag:nth-child(5) { bottom: 20%; left: 18%; transform: rotate(3deg); animation-delay: 0.3s; }
+        .hero-img-tag:nth-child(6) { bottom: 25%; right: 15%; transform: rotate(-5deg); animation-delay: 0.4s; }
+
+        .hero-img-top-right {
+            top: 25% !important;
+            left: 10% !important;
+            right: auto !important;
+            bottom: auto !important;
+            transform: rotate(12deg) !important;
+            max-width: 160px !important;
+            animation-delay: 0.2s !important;
+        }
+
+        .hero-img-top-right:hover {
+            transform: rotate(12deg) scale(1.15) !important;
+        }
+
+        /* 巨大3D膨胀立体蓝色星星背景 */
+        .big-star-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 800px;
+            z-index: 0;
+            perspective: 1500px; /* 提供3D空间 */
+            pointer-events: none; /* 防止遮挡点击 */
+        }
+        
+        .big-star {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* 平滑跟随鼠标 */
+        }
+
+        /* 膨胀感星星主体 */
+        .star-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        /* 模拟光影膨胀感 */
+        .star-layer-top {
+            background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.8) 0%, rgba(167, 197, 214, 0.8) 30%, rgba(107, 142, 173, 0.9) 60%, rgba(50, 80, 110, 0.95) 100%);
+            box-shadow: inset -20px -20px 40px rgba(0,0,0,0.5), inset 20px 20px 40px rgba(255,255,255,0.5);
+            opacity: 0.3;
+            transform: translateZ(25px);
+        }
+
+        /* 底部阴影增强立体感 */
+        .star-layer-bottom {
+            background: #2A4964;
+            transform: translateZ(-15px) scale(0.97);
+            opacity: 0.15;
+            filter: blur(20px);
+        }
+        .hero-title {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 6vw, 5rem);
+            color: var(--red-vintage);
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+            font-style: italic;
+            line-height: 1.1;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-dark);
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .hero-collage {
+            position: relative;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        .hero-polaroid-1 {
+            width: 260px;
+            transform: rotate(-5deg);
+            position: relative;
+            z-index: 3;
+        }
+        .hero-polaroid-2 {
+            position: absolute;
+            width: 220px;
+            right: 15%;
+            top: 20%;
+            transform: rotate(8deg);
+            z-index: 2;
+        }
+        .hero-polaroid-3 {
+            position: absolute;
+            width: 200px;
+            left: 18%;
+            bottom: 10%;
+            transform: rotate(-12deg);
+            z-index: 1;
+        }
+
+        /* 丝带装饰 */
+        .ribbon-deco {
+            position: absolute;
+            right: -20px;
+            top: 20%;
+            width: 150px;
+            height: 400px;
+            background-image: repeating-linear-gradient(45deg, var(--red-vintage) 0, var(--red-vintage) 10px, white 10px, white 20px);
+            opacity: 0.8;
+            z-index: 1;
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 90%, 0 100%);
+        }
+
+        /* 牛仔布/布贴装饰 */
+        .denim-star {
+            position: absolute;
+            right: 15%;
+            top: 25%;
+            width: 80px;
+            height: 80px;
+            background: #4A6984;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            border: 2px dashed white;
+            z-index: 4;
+            transform: rotate(15deg);
+            transition: transform 0.3s ease;
+            animation-delay: 0.15s;
+        }
+
+        .denim-star:hover {
+            animation: imgShake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        .denim-star.wiggle {
+            animation: imgEntrance 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .small-star {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #2A4964;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            z-index: 4;
+            transition: transform 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .small-star-1 {
+            right: 20%;
+            bottom: 15%;
+            top: auto;
+            width: 55px;
+            height: 55px;
+            transform: rotate(20deg);
+        }
+
+        .small-star-2 {
+            left: 10%;
+            top: 55%;
+            transform: rotate(-10deg);
+        }
+
+        .small-star:hover {
+            transform: scale(1.2) rotate(var(--star-rotate, 0deg)) !important;
+        }
+
+        .small-star.wiggle {
+            animation: starWiggle 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        @keyframes starWiggle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            20% { transform: scale(1.15) rotate(-15deg); }
+            40% { transform: scale(1.15) rotate(12deg); }
+            60% { transform: scale(1.1) rotate(-10deg); }
+            80% { transform: scale(1.1) rotate(8deg); }
+        }
+
+        .denim-heart {
+            position: absolute;
+            left: 20%;
+            bottom: 15%;
+            width: 70px;
+            height: 70px;
+            background: var(--red-vintage);
+            clip-path: path('M35,20 C35,20 25,0 10,10 C-5,20 10,45 35,65 C60,45 75,20 60,10 C45,0 35,20 35,20 Z');
+            border: 2px dashed white;
+            z-index: 4;
+            transform: rotate(-15deg);
+        }
+
+        /* --- 滚动装饰横条 --- */
+        .marquee-divider {
+            position: absolute;
+            left: 0;
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 45px;
+            background-color: var(--bg-cream);
+            border-top: 2px solid var(--red-vintage);
+            border-bottom: 2px solid var(--red-vintage);
+            bottom: 0px;
+            z-index: 20;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* --- 分隔用的横条（非绝对定位）--- */
+        .marquee-divider-separator {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            height: 45px;
+            background-color: var(--bg-cream);
+            border-top: 2px solid var(--red-vintage);
+            border-bottom: 2px solid var(--red-vintage);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee-scroll 25s linear infinite;
+            font-family: var(--font-serif);
+            font-size: 1rem;
+            color: #8B5A2B;
+            letter-spacing: 2px;
+        }
+
+        .marquee-content span {
+            margin: 0 40px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .marquee-star {
+            font-size: 0.8rem;
+            color: var(--red-vintage);
+        }
+
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* --- Portfolio Scroll Section --- */
+        .portfolio-scroll-container {
+            position: relative;
+            height: 400vh; /* 创造滚动空间：100vh(本身) + 200vh(用于滚动触发动画) */
+            margin: 0 -40px; /* 撑满 main-paper */
+        }
+        
+        .portfolio-sticky-view {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-pink);
+            background-image: 
+                linear-gradient(rgba(255,255,255,.4) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(255,255,255,.4) 2px, transparent 2px);
+            background-size: 30px 30px;
+            overflow: hidden;
+            padding: 0 40px;
+            z-index: 1;
+        }
+
+        .portfolio-header-img {
+            width: 120%;
+            height: auto;
+            display: block;
+            margin-bottom: 350px;
+        }
+
+        .portfolio-deco-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120%;
+            height: auto;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .portfolio-deco-btn {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: auto;
+            pointer-events: auto;
+            z-index: 2;
+            cursor: pointer;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .portfolio-deco-btn.visible {
+            opacity: 1;
+        }
+
+        .portfolio-deco-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .portfolio-title {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 6vw, 5rem);
+            color: var(--brown-vintage);
+            margin-bottom: 80px;
+            margin-top: 0;
+            text-align: center;
+            opacity: 1; /* 初始显示 */
+            transition: transform 0.5s ease;
+            position: relative;
+            z-index: 1;
+            font-style: italic;
+            line-height: 1.1;
+            letter-spacing: 0.1em;
+        }
+
+        .portfolio-cards-wrapper {
+            display: flex;
+            gap: 50px;
+            width: 100%;
+            max-width: 1600px;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .p-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 360px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            /* 初始状态：隐藏并在下方、靠左 */
+            opacity: 0;
+            transform: translateY(100px) scale(0.9);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* hover 用的弹性缓动 */
+        }
+
+        /* 滚动触发的入场动画类，将由 JS 控制 */
+        .p-card.revealed {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .p-card:hover {
+            transform: translateY(-10px) scale(1.02) !important; /* 强制覆盖 revealed 的 transform */
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .p-card-img {
+            width: 100%;
+            height: 200px;
+            background: #F0F0F0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            overflow: hidden;
+        }
+
+        .p-card-img img {
+            width: 110%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .p-card:nth-child(1) .p-card-img { background: #E8F0FE; color: #4A90E2; }
+        .p-card:nth-child(2) .p-card-img { background: #FFF0F5; color: #EC407A; }
+        .p-card:nth-child(3) .p-card-img { background: #F0FFF0; color: #AB47BC; }
+        .p-card:nth-child(4) .p-card-img { background: #F5FFFA; color: #2E8B57; }
+
+        .p-card h3 {
+            font-family: var(--font-serif);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+        .p-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        .p-card .p-tag {
+            font-size: 0.75rem;
+            color: var(--blue-vintage);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* --- Features / Icon Grid --- */
+        .features {
+            padding: 80px 0;
+            text-align: center;
+        }
+        .features h3 {
+            font-family: var(--font-serif);
+            font-size: 2rem;
+            letter-spacing: 2px;
+            margin-bottom: 60px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .f-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            /* Placeholder icons using emojis or CSS shapes */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .f-icon:hover {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .feature-item:hover .f-icon {
+            transform: scale(1.2) rotate(-10deg);
+        }
+        .feature-item h4 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .feature-item p {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* --- Blue Section (Projects) --- */
+        .blue-section {
+            background-color: var(--blue-vintage);
+            padding: 80px 40px;
+            margin: 0 -40px;
+            color: white;
+            position: relative;
+        }
+        /* 撕纸边缘效果顶部 */
+        .blue-section::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 20' preserveAspectRatio='none'%3E%3Cpath d='M0,20 L0,10 Q10,0 20,10 T40,10 T60,10 T80,10 T100,10 T120,10 T140,10 T160,10 T180,10 T200,10 T220,10 T240,10 T260,10 T280,10 T300,10 T320,10 T340,10 T360,10 T380,10 T400,10 T420,10 T440,10 T460,10 T480,10 T500,10 T520,10 T540,10 T560,10 T580,10 T600,10 T620,10 T640,10 T660,10 T680,10 T700,10 T720,10 T740,10 T760,10 T780,10 T800,10 T820,10 T840,10 T860,10 T880,10 T900,10 T920,10 T940,10 T960,10 T980,10 T1000,10 T1020,10 T1040,10 T1060,10 T1080,10 T1100,10 T1120,10 T1140,10 T1160,10 T1180,10 T1200,10 L1200,20 Z' fill='%236B8EAD'/%3E%3C/svg%3E");
+        }
+
+        .blue-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+
+        .blue-title {
+            font-family: var(--font-serif);
+            font-size: 3.5rem;
+            line-height: 1.1;
+            font-style: italic;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .blue-title:hover {
+            transform: scale(1.05);
+        }
+
+        .red-star {
+            color: var(--red-vintage);
+            font-size: 2rem;
+            position: absolute;
+            transition: transform 0.3s ease;
+        }
+
+        .red-star:hover {
+            transform: rotate(20deg) scale(1.3);
+        }
+
+        .project-list {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 30px;
+        }
+        .project-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        .project-item:last-child { border-bottom: none; }
+        .p-icon { font-size: 1.5rem; }
+
+        .stat-card {
+            background: var(--bg-cream);
+            color: var(--text-dark);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .stat-number {
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-number {
+            transform: scale(1.05);
+        }
+
+        .stat-card .info-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover .info-card {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        .stat-polaroid {
+            position: absolute;
+            right: 20px;
+            top: -40px;
+            width: 150px;
+            transform: rotate(5deg);
+        }
+        .stat-polaroid .polaroid { padding-bottom: 20px; background: var(--red-vintage); }
+        .stat-polaroid img { border: 2px solid white; }
+        
+        .stat-number {
+            font-family: var(--font-body);
+            font-size: 4rem;
+            color: var(--blue-vintage);
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        /* --- Footer --- */
+        .site-footer {
+            text-align: center;
+            padding: 60px 0;
+            font-size: 0.9rem;
+            color: #888;
+        }
+        .hand-bow {
+            width: 100px;
+            margin: 0 auto 20px;
+            opacity: 0.5;
+        }
+
+        /* --- Project Detail View --- */
+        .view-container {
+            display: none;
+        }
+        .view-container.active {
+            display: block;
+        }
+
+        .detail-page {
+            background-color: var(--bg-cream);
+            padding: 80px 40px;
+            color: var(--text-dark);
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 20;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            color: var(--red-vintage);
+            text-decoration: none;
+            margin-bottom: 60px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateX(-5px);
+        }
+
+        .detail-header {
+            margin-bottom: 80px;
+            text-align: center;
+        }
+        .detail-header h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+        .detail-header .tags {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .detail-header .tag {
+            padding: 6px 16px;
+            border: 1px solid var(--blue-vintage);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--blue-vintage);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-module {
+            margin-bottom: 100px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease;
+        }
+        .detail-module.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .fade-in {
+            opacity: 1;
+        }
+        .fade-in.visible {
+            opacity: 1;
+        }
+
+        .module-title {
+            font-family: var(--font-serif);
+            font-size: 2.5rem;
+            color: var(--blue-vintage);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .module-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: rgba(107, 142, 173, 0.3);
+        }
+        .module-title span {
+            font-size: 1.2rem;
+            color: var(--red-vintage);
+            font-style: italic;
+        }
+
+        .module-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+        }
+        
+        .module-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 30px;
+        }
+        
+        .info-card {
+            background: rgba(167, 197, 214, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid var(--blue-vintage);
+        }
+        .info-card h4 {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .img-placeholder {
+            width: 100%;
+            background: #EAEAEA;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-top: 40px;
+            border: 1px dashed #CCC;
+        }
+        .img-large { height: 400px; }
+        .img-medium { height: 250px; }
+
+        .clickable-project {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .clickable-project:hover {
+            background: rgba(255,255,255,0.2);
+            padding-left: 10px;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 1200px) {
+            .portfolio-cards-wrapper { flex-wrap: wrap; }
+            .p-card { width: calc(50% - 15px); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero-title { font-size: 3rem; }
+            .about-card, .blue-grid { grid-template-columns: 1fr; }
+            .feature-grid { grid-template-columns: 1fr 1fr; }
+            .hero-polaroid-2, .hero-polaroid-3 { display: none; }
+            .stat-polaroid { position: static; margin-bottom: 20px; width: 120px; }
+            .ribbon-deco { display: none; }
+            .module-grid { grid-template-columns: 1fr; }
+            .detail-page { padding: 40px 20px; }
+            .p-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏移出 main-paper -->
+    <nav class="navbar">
+        <a href="#" class="logo" onclick="showView('home-view')">XIAO TANG</a>
+        <ul class="nav-links">
+            <li><a href="#" onclick="showView('home-view')">Home</a></li>
+            <li><a href="#projects">Project</a></li>
+            <li><a href="#about">about</a></li>
+            <li><a href="#" id="resumeLink">简历</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-paper">
+        <div class="wavy-edge wavy-left"></div>
+        <div class="wavy-edge wavy-right"></div>
+
+        <div class="container">
+            <!-- Home View -->
+            <div id="home-view" class="view-container active">
+                <section class="hero">
+                <div class="glow-effect" id="glow-effect-0"></div>
+                <div class="glow-effect" id="glow-effect-1"></div>
+                <div class="glow-effect" id="glow-effect-2"></div>
+                <div class="glow-effect" id="glow-effect-3"></div>
+                <div class="glow-effect" id="glow-effect-4"></div>
+                <div class="glow-effect" id="glow-effect-5"></div>
+                <div class="glow-effect" id="glow-effect-6"></div>
+                <div class="glow-effect" id="glow-effect-7"></div>
+                <div class="glow-effect" id="glow-effect-8"></div>
+                <div class="glow-effect" id="glow-effect-9"></div>
+                <div class="big-star-container">
+                    <div class="big-star" id="interactive-star">
+                        <div class="star-layer star-layer-bottom"></div>
+                        <div class="star-layer star-layer-top"></div>
+                    </div>
+                </div>
+                
+                <div class="hero-text-container">
+                    <h1 class="hero-title">design that feels <br>like <span class="highlight-text">you</span>.</h1>
+                    <p class="hero-subtitle">Playful branding & web design for creative founders who want to stand out.</p>
+                </div>
+                
+                <div class="hero-decorations">
+                    <div class="denim-star"></div>
+                    <div class="small-star small-star-1"></div>
+                    <div class="small-star small-star-2"></div>
+                    <img src="resources/2026.png" alt="2026" class="hero-img-tag">
+                    <img src="resources/UI、UX.png" alt="UI/UX" class="hero-img-tag">
+                    <img src="resources/产品体验.png" alt="产品体验" class="hero-img-tag">
+                    <img src="resources/小汤.png" alt="小汤" class="hero-img-tag hero-img-top-right">
+                </div>
+                
+                <div class="marquee-divider">
+                    <div class="marquee-content">
+                        <span>REDUCE OVERWHELM</span> <span class="marquee-star">★</span>
+                        <span>SUPPORT WITH HEART</span> <span class="marquee-star">★</span>
+                        <span>YOUR BUSINESS, ELEVATED</span> <span class="marquee-star">★</span>
+                        <span>CREATIVE DESIGN</span> <span class="marquee-star">★</span>
+                        <span>PLAYFUL BRANDING</span> <span class="marquee-star">★</span>
+                        <span>REDUCE OVERWHELM</span> <span class="marquee-star">★</span>
+                        <span>SUPPORT WITH HEART</span> <span class="marquee-star">★</span>
+                        <span>YOUR BUSINESS, ELEVATED</span> <span class="marquee-star">★</span>
+                        <span>CREATIVE DESIGN</span> <span class="marquee-star">★</span>
+                        <span>PLAYFUL BRANDING</span> <span class="marquee-star">★</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="portfolio-scroll-container" id="projects">
+                <div class="portfolio-sticky-view" id="portfolio">
+                    <img src="resources/波浪白.png" alt="波浪白" class="portfolio-deco-img">
+                    <h2 class="portfolio-title">  Portfolio✨</h2>
+                    
+                    <div class="portfolio-cards-wrapper">
+                        <!-- Card 1 -->
+                        <div class="p-card" onclick="window.location.href='xbotgo.html'">
+                            <img src="resources/XBotGo卡片.png" alt="XBotGo" class="p-card-img">
+                            <span class="p-tag">UI/UX Design</span>
+                            <h3>XBotGO - 实习</h3>
+                            <p>视觉与交互体验全面升级，打造现代科技感控制台。</p>
+                        </div>
+                        
+                        <!-- Card 2 -->
+                        <div class="p-card" onclick="window.location.href='doumi.html'">
+                            <img src="resources/斗米卡片.png" alt="斗米" class="p-card-img">
+                            <span class="p-tag">Product Design</span>
+                            <h3>斗米 - 项目</h3>
+                            <p>核心求职链路重构，降低门槛提升报名转化率。</p>
+                        </div>
+                        
+                        <!-- Card 3 -->
+                        <div class="p-card" onclick="window.location.href='dafuwen.html'">
+                            <img src="resources/大富翁卡片.png" alt="大富翁" class="p-card-img">
+                            <span class="p-tag">Game UI</span>
+                            <h3>斗米大富翁 - 运营</h3>
+                            <p>活动游戏化设计，用趣味互动提升用户日活与留存。</p>
+                        </div>
+                        
+                        <!-- Card 4 -->
+                        <div class="p-card" onclick="window.location.href='ai play.html'">
+                            <img src="resources/AI.png" alt="AI" class="p-card-img">
+                            <span class="p-tag">Innovation</span>
+                            <h3>AI小游戏</h3>
+                            <p>大语言模型创新交互探索，降低普通用户创作门槛。</p>
+                        </div>
+                    </div>
+                    <img src="resources/跳转按钮.png" alt="跳转按钮" class="portfolio-deco-btn">
+                </div>
+            </div>
+
+            <section class="features" id="about">
+                <h3>WHY YOU'LL LOVE THIS</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="f-icon">📏</div>
+                        <h4>学习能力强</h4>
+                        <p>Your support is shaped around your business and goals.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="f-icon">📝</div>
+                        <h4>清晰沟通</h4>
+                        <p>Expect steady updates and thoughtful follow-through.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="f-icon">💻</div>
+                        <h4>功底扎实</h4>
+                        <p>With solid experience supporting busy teams.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="f-icon">☕</div>
+                        <h4>情绪稳定</h4>
+                        <p>We create repeatable systems to reduce overwhelm.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="blue-section">
+                <span class="red-star" style="top: 40px; left: 40px;">★</span>
+                <span class="red-star" style="bottom: 40px; right: 40px;">★</span>
+                
+                <div class="container blue-grid">
+                    <div>
+                        <h2 class="blue-title">creative guys<br>are the richest</h2>
+                        <p style="margin-bottom: 30px; opacity: 0.9;">参与过多个核心项目的设计与升级，从需求梳理到最终落地，始终保持对细节的执着与对体验的追求。</p>
+                        
+                        <div class="project-list">
+                            <div class="project-item">
+                                <span class="p-icon">✦</span>
+                                <span>XBotGO APP 视觉与交互升级</span>
+                            </div>
+                            <div class="project-item">
+                                <span class="p-icon">✦</span>
+                                <span>斗米 APP 核心链路重构</span>
+                            </div>
+                            <div class="project-item">
+                                <span class="p-icon">✦</span>
+                                <span>《斗米大富翁》活动游戏化设计</span>
+                            </div>
+                            <div class="project-item">
+                                <span class="p-icon">✦</span>
+                                <span>AI能力应用（快来玩呀）</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding-top: 40px;">
+                        <div class="stat-card">
+                            <div class="stat-polaroid">
+                                <div class="polaroid">
+                                    <div class="tape tape-1"></div>
+                                    <img src="resources/pho1.png" alt="Me">
+                                </div>
+                            </div>
+                            
+                            <h4 style="font-family: var(--font-body); font-style: italic; margin-bottom: 10px;"> UI / UX / 体验设计</h4>
+                            <div class="stat-number">周夏婷</div>
+                            <p style="color: #666; margin-bottom: 40px; margin-top: 10px; font-size: 0.9rem;">（一周到岗5天，实习6月）</p>
+                            
+                            <div style="background: white; border: 1px solid #eee; border-radius: 10px; padding: 20px; display: flex; gap: 15px; align-items: center; margin-bottom: 15px;" class="info-card">
+                                <div style="width: 50px; height: 50px; border-radius: 50%; background: #eee; overflow: hidden;">
+                                    <img src="resources/pho1.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.9rem;">Xiao Tang • 👩‍🎨</div>
+                                    <div style="color: #888; font-size: 0.8rem;">UI/UX Designer</div>
+                                </div>
+                            </div>
+                            <div style="background: white; border: 1px solid #eee; border-radius: 10px; padding: 20px;" class="info-card">
+                                <div style="color: #666; font-size: 0.85rem; line-height: 1.8;">
+                                    <div><span style="color: #888;">本       科：</span>福州大学 | 视觉传达 大三（重点211）</div>
+                                    <div style="margin-top: 8px;"><span style="color: #888;">电     话：</span>180-1662-1260（微信同号）</div>
+                                    <div style="margin-top: 8px;"><span style="color: #888;">邮     箱：</span>2283087502@qq.com</div>
+                                    <div style="margin-top: 8px;"><span style="color: #888;">现居地：</span>福建省厦门市</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- XBotGO Project Detail View -->
+            <div id="detail-view" class="view-container">
+                <div class="detail-page">
+                    <a class="back-btn" onclick="showView('home-view')">
+                        <span>←</span> BACK TO HOME
+                    </a>
+
+                    <div class="detail-header">
+                        <h1>XBotGO APP<br>视觉与交互体验升级</h1>
+                        <div class="tags">
+                            <span class="tag">UI/UX Design</span>
+                            <span class="tag">App Redesign</span>
+                            <span class="tag">2023</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 80px;">
+                        <h3 style="font-family: var(--font-body); font-size: 1.5rem; margin-bottom: 30px;">项目图片展示</h3>
+                        <img src="resources/XBotGO 01.jpg" alt="XBotGO 01" style="width: 100%; border-radius: 12px; margin-bottom: 20px;">
+                        <img src="resources/XBotGO 02.jpg" alt="XBotGO 02" style="width: 100%; border-radius: 12px; margin-bottom: 20px;">
+                        <img src="resources/XBotGO 03.jpg" alt="XBotGO 03" style="width: 100%; border-radius: 12px; margin-bottom: 20px;">
+                        <img src="resources/XBotGO 04.jpg" alt="XBotGO 04" style="width: 100%; border-radius: 12px; margin-bottom: 20px;">
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>01</span> 项目背景</h3>
+                        <div class="module-content">
+                            <p>XBotGO 是一款专注于智能硬件控制与数据监控的移动端应用。随着硬件产品的迭代，旧版 APP 在视觉语言、操作逻辑和信息层级上逐渐显露出不足，无法满足核心用户对于"高效、专业、科技感"的期待。</p>
+                            <p style="margin-top: 15px;"><strong>核心痛点：</strong>设备连接状态不直观、控制面板信息过载、整体视觉风格陈旧缺乏品牌识别度。</p>
+                            <p style="margin-top: 15px;"><strong>设计目标：</strong>重构核心操作链路，建立清晰的信息层级，打造现代科技感的全新视觉规范。</p>
+                            <p style="margin-top: 15px;"><strong>架构分析：</strong>采用模块化分层架构，将设备控制、数据展示、用户设置三大核心模块解耦。通过状态管理中台实现跨模块数据同步，确保设备联动响应实时性。</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>02</span> 解决方案</h3>
+                        <div class="module-content">
+                            <p><strong>1. 视觉语言重塑</strong></p>
+                            <p style="margin-top: 10px;">提取品牌基因中的科技蓝作为主色调，结合深色模式打造沉浸式控制体验。采用大圆角卡片与毛玻璃效果，提升界面的现代感与呼吸感。</p>
+                            <p style="margin-top: 20px;"><strong>2. 信息架构优化</strong></p>
+                            <p style="margin-top: 10px;">将原本散落的控制项进行场景化聚合，通过底部抽屉和手势滑动，让单手操作更加流畅。核心功能触达路径从平均 3 步缩短至 1.5 步。</p>
+                            <p style="margin-top: 20px;"><strong>3. 交互体验升级</strong></p>
+                            <p style="margin-top: 10px;">引入实时状态反馈机制，设备连接、指令下发、结果确认形成完整闭环。微动效设计强化操作反馈感，降低用户焦虑。</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>03</span> 我的任务</h3>
+                        <div class="module-grid">
+                            <div class="info-card">
+                                <h4>工作范围</h4>
+                                <ul>
+                                    <li>参与前期用户访谈与需求分析</li>
+                                    <li>重构设备控制核心页面的信息架构</li>
+                                    <li>制定全新的 UI 视觉规范体系</li>
+                                    <li>输出高保真设计图及交互动效 demo</li>
+                                </ul>
+                            </div>
+                            <div class="info-card">
+                                <h4>核心角色</h4>
+                                <ul>
+                                    <li>主导视觉升级的主干设计师</li>
+                                    <li>跨部门沟通（产品/研发）的桥梁</li>
+                                    <li>设计规范的建立者与维护者</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>04</span> 需求挖掘</h3>
+                        <div class="module-content">
+                            <p>通过对 50+ 核心用户的深度访谈以及针对竞品（如 DJI, GoPro 等）的横向分析，我们发现用户在实际操作中，最关注的是"当前状态感知"与"核心功能触达效率"。</p>
+                            <div class="img-placeholder img-medium" style="margin-top: 30px;">
+                                [ 用户旅程图 / 痛点分析图表 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>05</span> 设计执行</h3>
+                        <div class="module-content">
+                            <p><strong>视觉规范：</strong>提取品牌基因中的科技蓝作为主色调，结合深色模式打造沉浸式控制体验。采用大圆角卡片与毛玻璃效果，提升界面的现代感与呼吸感。</p>
+                            <p style="margin-top: 15px;"><strong>交互优化：</strong>将原本散落的控制项进行场景化聚合，通过底部抽屉和手势滑动，让单手操作更加流畅。</p>
+                            <div class="img-placeholder img-large" style="margin-top: 30px;">
+                                [ 高保真界面展示 / 视觉规范画板 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module">
+                        <h3 class="module-title"><span>06</span> 结果验证</h3>
+                        <div class="module-content">
+                            <p>新版本上线后，核心功能的触达路径从平均 3 步缩短至 1.5 步。通过可用性测试，用户任务完成率提升了 35%。</p>
+                            <div class="module-grid">
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--blue-vintage);">+35%</div>
+                                    <p style="color: #666;">任务完成效率提升</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--red-vintage);">98%</div>
+                                    <p style="color: #666;">视觉满意度好评</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doumi Project Detail View -->
+            <div id="doumi-view" class="view-container">
+                <div class="detail-page">
+                    <a class="back-btn" onclick="showView('home-view')">
+                        <span>←</span> BACK TO HOME
+                    </a>
+
+                    <div class="detail-header fade-in">
+                        <h1>斗米 APP<br>核心链路重构</h1>
+                        <div class="tags">
+                            <span class="tag">Product Design</span>
+                            <span class="tag">UX Research</span>
+                            <span class="tag">2024</span>
+                        </div>
+                    </div>
+
+                    <div class="img-placeholder img-large fade-in" style="margin-bottom: 80px;">
+                        [ 斗米项目主视觉图 ]
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>01</span> 项目背景</h3>
+                        <div class="module-content">
+                            <p>斗米是国内领先的灵活用工服务平台。随着业务的扩张，原有的找兼职、报名、面试等核心链路变得臃肿，用户流失率增加。</p>
+                            <p style="margin-top: 15px;"><strong>设计目标：</strong>简化求职者从"发现岗位"到"确认上岗"的全链路体验，降低认知门槛，提升转化率。</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>02</span> 我的任务</h3>
+                        <div class="module-grid">
+                            <div class="info-card">
+                                <h4>工作范围</h4>
+                                <ul>
+                                    <li>主导核心求职链路的交互梳理</li>
+                                    <li>设计品牌吉祥物的全新视觉</li>
+                                    <li>更新并推行全端设计规范</li>
+                                </ul>
+                            </div>
+                            <div class="info-card">
+                                <h4>核心角色</h4>
+                                <ul>
+                                    <li>体验设计负责人</li>
+                                    <li>用户研究调研员</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>03</span> 需求挖掘</h3>
+                        <div class="module-content">
+                            <p>通过数据埋点分析发现，用户在"填写简历"和"职位筛选"环节流失最严重。我们将其转化为具体的体验优化指标：减少必填项、增加智能推荐。</p>
+                            <div class="img-placeholder img-medium" style="margin-top: 30px;">
+                                [ 数据漏斗图 / 调研报告 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>04</span> 设计执行</h3>
+                        <div class="module-content">
+                            <p><strong>体验重塑：</strong>引入分步式简历填写，利用卡片式设计隔离信息噪音。同时，将品牌吉祥物巧妙融入加载、空状态等环节，提升情感化体验。</p>
+                            <div class="img-placeholder img-large" style="margin-top: 30px;">
+                                [ 核心页面对比图 / 吉祥物应用 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>05</span> 结果验证</h3>
+                        <div class="module-content">
+                            <p>改版后，简历完整度提升显著，核心岗位的报名转化率实现了大幅度增长。</p>
+                            <div class="module-grid">
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--blue-vintage);">+42%</div>
+                                    <p style="color: #666;">简历提交转化率</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--red-vintage);">-20%</div>
+                                    <p style="color: #666;">页面跳出率</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monopoly Project Detail View -->
+            <div id="monopoly-view" class="view-container">
+                <div class="detail-page">
+                    <a class="back-btn" onclick="showView('home-view')">
+                        <span>←</span> BACK TO HOME
+                    </a>
+
+                    <div class="detail-header fade-in">
+                        <h1>《斗米大富翁》<br>活动游戏化设计</h1>
+                        <div class="tags">
+                            <span class="tag">Game UI</span>
+                            <span class="tag">Event Design</span>
+                            <span class="tag">Illustration</span>
+                        </div>
+                    </div>
+
+                    <div class="img-placeholder img-large fade-in" style="margin-bottom: 80px;">
+                        [ 大富翁活动主视觉图 ]
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>01</span> 项目背景</h3>
+                        <div class="module-content">
+                            <p>为提升平台活跃度与用户粘性，结合节假日节点推出《斗米大富翁》线上互动游戏。希望通过游戏化手段（Gamification）促进用户每日签到与分享。</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>02</span> 我的任务</h3>
+                        <div class="module-grid">
+                            <div class="info-card">
+                                <h4>工作范围</h4>
+                                <ul>
+                                    <li>游戏地图与建筑元素的插画绘制</li>
+                                    <li>游戏核心界面的 UI 设计</li>
+                                    <li>交互动效与反馈机制设计</li>
+                                </ul>
+                            </div>
+                            <div class="info-card">
+                                <h4>核心角色</h4>
+                                <ul>
+                                    <li>主视觉插画师</li>
+                                    <li>游戏化 UI 设计师</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>03</span> 需求挖掘</h3>
+                        <div class="module-content">
+                            <p>分析了市面上主流的轻量级 H5 游戏，提炼出"即时反馈"、"阶段性奖励"和"社交炫耀"三个核心驱动力，作为设计的基调。</p>
+                            <div class="img-placeholder img-medium" style="margin-top: 30px;">
+                                [ 竞品分析 / 玩法机制图 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>04</span> 设计执行</h3>
+                        <div class="module-content">
+                            <p><strong>视觉呈现：</strong>采用 2.5D 轴测图视角绘制地图，色彩明快活泼。设计了丰富的微动效（如掷骰子、金币掉落），强化游戏的沉浸感。</p>
+                            <div class="img-placeholder img-large" style="margin-top: 30px;">
+                                [ 地图元素展示 / 动效演示 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>05</span> 结果验证</h3>
+                        <div class="module-content">
+                            <p>活动上线期间，DAU 显著提升，用户在端内的平均停留时长翻倍，社交分享率超出预期。</p>
+                            <div class="module-grid">
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--blue-vintage);">2.5x</div>
+                                    <p style="color: #666;">日均停留时长增长</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--red-vintage);">15w+</div>
+                                    <p style="color: #666;">活动参与人次</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Project Detail View -->
+            <div id="ai-view" class="view-container">
+                <div class="detail-page">
+                    <a class="back-btn" onclick="showView('home-view')">
+                        <span>←</span> BACK TO HOME
+                    </a>
+
+                    <div class="detail-header fade-in">
+                        <h1>AI 能力应用<br>（快来玩呀）</h1>
+                        <div class="tags">
+                            <span class="tag">AI Integration</span>
+                            <span class="tag">Innovation</span>
+                            <span class="tag">Concept</span>
+                        </div>
+                    </div>
+
+                    <div class="img-placeholder img-large fade-in" style="margin-bottom: 80px;">
+                        [ AI项目概念图 / 头图 ]
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>01</span> 项目背景</h3>
+                        <div class="module-content">
+                            <p>探索大语言模型与生成式 AI 在实际业务场景中的应用潜力。旨在打造一个有趣、低门槛的 AI 互动体验，让普通用户也能感受到 AI 的魅力。</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>02</span> 我的任务</h3>
+                        <div class="module-grid">
+                            <div class="info-card">
+                                <h4>工作范围</h4>
+                                <ul>
+                                    <li>AI 互动玩法的概念构思</li>
+                                    <li>对话/生成界面的体验设计</li>
+                                    <li>Prompt 策略与视觉反馈结合</li>
+                                </ul>
+                            </div>
+                            <div class="info-card">
+                                <h4>核心角色</h4>
+                                <ul>
+                                    <li>创新体验设计师</li>
+                                    <li>AI 场景探索者</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>03</span> 需求挖掘</h3>
+                        <div class="module-content">
+                            <p>当前大多数 AI 工具界面过于硬核。我们需要一种"游戏化、傻瓜化"的交互方式，将复杂的参数调节隐藏在自然的对话与简单的点击中。</p>
+                            <div class="img-placeholder img-medium" style="margin-top: 30px;">
+                                [ 体验痛点分析 / 用户故事 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>04</span> 设计执行</h3>
+                        <div class="module-content">
+                            <p><strong>极简对话流：</strong>打破传统的聊天气泡，采用全屏沉浸式的生成动效。在 AI 处理过程中，提供有趣的状态提示和视觉反馈，缓解用户的等待焦虑。</p>
+                            <div class="img-placeholder img-large" style="margin-top: 30px;">
+                                [ AI 对话界面 / 生成过程动效 ]
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-module fade-in">
+                        <h3 class="module-title"><span>05</span> 结果验证</h3>
+                        <div class="module-content">
+                            <p>作为一个创新探索项目，成功验证了 AI 降低用户创作门槛的可行性，收集了大量正向的用户反馈，为后续核心业务的 AI 化提供了设计范式。</p>
+                            <div class="module-grid">
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--blue-vintage);">80%</div>
+                                    <p style="color: #666;">首次使用成功率</p>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-family: var(--font-body); font-size: 3.5rem; color: var(--red-vintage);">10k+</div>
+                                    <p style="color: #666;">生成作品数量</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="site-footer">
+                <svg class="hand-bow" viewBox="0 0 100 100" fill="none" stroke="var(--red-vintage)" stroke-width="2">
+                    <path d="M50 50 C30 30, 10 40, 20 60 C30 80, 45 60, 50 50 C55 60, 70 80, 80 60 C90 40, 70 30, 50 50" />
+                    <path d="M50 50 Q40 80 35 95" />
+                    <path d="M50 50 Q60 80 65 95" />
+                </svg>
+                <p>"Working with Xiao Tang instantly brought calm to my project. Organized, creative, and I feel like I can breathe again."</p>
+                <p style="margin-top: 10px; font-weight: bold; letter-spacing: 1px;">— HAPPY CLIENTS</p>
+            </footer>
+        </div>
+    </div>
+
+<script>
+        // 单页视图切换逻辑
+        function showView(viewId) {
+            // 隐藏所有视图
+            document.querySelectorAll('.view-container').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // 显示目标视图
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // 如果是回到首页，触发对话框的 wiggle 动画
+                if (viewId === 'home-view') {
+                    triggerConvoWiggle();
+                }
+            }
+        }
+
+        // 对话框和小星星 wiggle 动画触发
+        let convoAnimated = false;
+        function triggerConvoWiggle() {
+            const convoBoxes = document.querySelectorAll('.convo-box');
+            const smallStars = document.querySelectorAll('.small-star');
+            const heroImgTags = document.querySelectorAll('.hero-img-tag');
+            const denimStars = document.querySelectorAll('.denim-star');
+            if (convoBoxes.length === 0 && smallStars.length === 0 && heroImgTags.length === 0 && denimStars.length === 0) return;
+
+            // 强制重排以重新触发动画
+            void convoBoxes[0]?.offsetWidth;
+            void smallStars[0]?.offsetWidth;
+            void heroImgTags[0]?.offsetWidth;
+            void denimStars[0]?.offsetWidth;
+
+            // 对话框 wiggle
+            convoBoxes.forEach((box, index) => {
+                box.classList.remove('wiggle');
+                void box.offsetWidth;
+                setTimeout(() => {
+                    box.classList.add('wiggle');
+                }, index * 150);
+            });
+
+            // 小星星 wiggle
+            smallStars.forEach((star, index) => {
+                star.classList.remove('wiggle');
+                void star.offsetWidth;
+                setTimeout(() => {
+                    star.classList.add('wiggle');
+                }, index * 200); // 小星星延迟 200ms
+            });
+
+            // 图片 wiggle
+            heroImgTags.forEach((img, index) => {
+                img.classList.remove('wiggle');
+                void img.offsetWidth;
+                setTimeout(() => {
+                    img.classList.add('wiggle');
+                }, index * 150);
+            });
+
+            // denim-star wiggle
+            denimStars.forEach((star, index) => {
+                star.classList.remove('wiggle');
+                void star.offsetWidth;
+                setTimeout(() => {
+                    star.classList.add('wiggle');
+                }, index * 150);
+            });
+
+            // 动画结束后移除 wiggle 类
+            const totalDuration = 150 + Math.max(convoBoxes.length, smallStars.length, heroImgTags.length, denimStars.length) * 200 + 800;
+            setTimeout(() => {
+                convoBoxes.forEach(box => box.classList.remove('wiggle'));
+                smallStars.forEach(star => star.classList.remove('wiggle'));
+                heroImgTags.forEach(img => img.classList.remove('wiggle'));
+                denimStars.forEach(star => star.classList.remove('wiggle'));
+            }, totalDuration);
+        }
+
+        // 3D 互动星星动画逻辑
+        function initInteractiveStar() {
+            const star = document.getElementById('interactive-star');
+            const heroSection = document.querySelector('.hero');
+            const convoBoxes = document.querySelectorAll('.convo-box');
+            const glowEffects = [];
+            for (let i = 0; i < 10; i++) {
+                glowEffects.push(document.getElementById('glow-effect-' + i));
+            }
+            const positionHistory = [];
+            const maxHistory = 10;
+            
+            if (!star || !heroSection) return;
+
+            heroSection.addEventListener('mousemove', (e) => {
+                // 只有在主页视图激活时才计算
+                if (!document.getElementById('home-view').classList.contains('active')) return;
+
+                const rect = heroSection.getBoundingClientRect();
+                const glowX = e.clientX - rect.left - 60;
+                const glowY = e.clientY - rect.top - 60;
+                
+                // 添加新位置到历史记录开头
+                positionHistory.unshift({ x: glowX, y: glowY });
+                if (positionHistory.length > maxHistory) {
+                    positionHistory.pop();
+                }
+                
+                // 拖尾效果 - 每个glow元素跟随历史位置
+                glowEffects.forEach((glow, index) => {
+                    if (glow && positionHistory[index]) {
+                        const pos = positionHistory[index];
+                        const scale = 1 - (index * 0.07);
+                        const opacity = 1 - (index * 0.1);
+                        glow.style.left = pos.x + 'px';
+                        glow.style.top = pos.y + 'px';
+                        glow.style.transform = `scale(${scale})`;
+                        glow.style.opacity = opacity;
+                    }
+                });
+                
+                // 计算鼠标在 Hero 区域内的相对位置 (-1 到 1)
+                const relX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                const relY = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+                
+                // 将相对位置映射为旋转角度
+                // 提高灵敏度，增强 360 度转动感
+                const rotateX = -relY * 45;
+                const rotateY = relX * 45;
+                
+                // 应用 3D 旋转变换，增加 translateZ 强化立体感
+                star.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(25px)`;
+                
+                // 动态调整高光位置，增强膨胀感
+                const topLayer = star.querySelector('.star-layer-top');
+                if (topLayer) {
+                    const bgX = 50 - (relX * 30);
+                    const bgY = 50 - (relY * 30);
+                    topLayer.style.background = `radial-gradient(circle at ${bgX}% ${bgY}%, rgba(255,255,255,0.8) 0%, rgba(167, 197, 214, 0.8) 30%, rgba(107, 142, 173, 0.9) 60%, rgba(50, 80, 110, 0.95) 100%)`;
+                    topLayer.style.transform = `translateZ(25px)`;
+                }
+
+                // 对话框晃动效果
+                convoBoxes.forEach(box => {
+                    const boxRect = box.getBoundingClientRect();
+                    const dx = e.clientX - (boxRect.left + boxRect.width / 2);
+                    const dy = e.clientY - (boxRect.top + boxRect.height / 2);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) { // 鼠标靠近到 150px 范围内触发
+                        const hoverRotate = (dx / 150) * 10; // 根据鼠标左右位置决定晃动方向
+                        box.style.setProperty('--hover-rotate', `${hoverRotate}deg`);
+                    } else {
+                        box.style.setProperty('--hover-rotate', `0deg`);
+                    }
+                });
+
+                // 小星星跟随鼠标旋转效果
+                const smallStars = document.querySelectorAll('.small-star');
+                smallStars.forEach((sStar, index) => {
+                    const starRotate = (relX * 20) + (index % 2 === 0 ? 10 : -10);
+                    sStar.style.setProperty('--star-rotate', `${starRotate}deg`);
+                });
+
+                // denim-star 靠近鼠标时触发震动
+                const denimStars = document.querySelectorAll('.denim-star');
+                denimStars.forEach((dStar) => {
+                    const starRect = dStar.getBoundingClientRect();
+                    const dx = e.clientX - (starRect.left + starRect.width / 2);
+                    const dy = e.clientY - (starRect.top + starRect.height / 2);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        dStar.classList.add('wiggle');
+                    } else {
+                        dStar.classList.remove('wiggle');
+                    }
+                });
+            });
+
+            // 鼠标离开 Hero 区域时，星星和对话框恢复原位
+            heroSection.addEventListener('mouseleave', () => {
+                star.style.transform = `rotateX(0deg) rotateY(0deg) translateZ(0)`;
+                const topLayer = star.querySelector('.star-layer-top');
+                if (topLayer) {
+                    topLayer.style.background = '';
+                    topLayer.style.transform = '';
+                }
+                convoBoxes.forEach(box => {
+                    box.style.setProperty('--hover-rotate', `0deg`);
+                });
+                const smallStars = document.querySelectorAll('.small-star');
+                smallStars.forEach(sStar => {
+                    sStar.style.setProperty('--star-rotate', `0deg`);
+                });
+            });
+        }
+
+        // 滚动渐入动画逻辑
+        let observer;
+        function initIntersectionObserver() {
+            if (observer) {
+                observer.disconnect();
+            }
+            
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.classList.add('visible');
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+
+            // 只观察当前活动视图中的元素
+            const activeView = document.querySelector('.view-container.active');
+            if (activeView) {
+                activeView.querySelectorAll('.fade-in').forEach(el => {
+                    el.classList.remove('visible'); // 重置状态
+                    observer.observe(el);
+                });
+            }
+        }
+
+        // 作品目录滚动动画控制逻辑
+        function initPortfolioScroll() {
+            const container = document.querySelector('.portfolio-scroll-container');
+            const stickyView = document.querySelector('.portfolio-sticky-view');
+            const cards = document.querySelectorAll('.p-card');
+            const decoBtn = document.querySelector('.portfolio-deco-btn');
+
+            if (!container || !stickyView) return;
+
+            window.addEventListener('scroll', () => {
+                // 只有在主页视图激活时才计算
+                if (!document.getElementById('home-view').classList.contains('active')) return;
+
+                const rect = container.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+
+                // 计算滚动进度 0 到 1
+                // rect.top 是容器顶部距离视口顶部的距离
+                // 当 rect.top <= 0 时，容器到达顶部并开始 sticky
+                let progress = 0;
+
+                if (rect.top <= 0) {
+                    // 总共可滚动的高度是 容器高度 - 视口高度
+                    const scrollableHeight = rect.height - windowHeight;
+                    progress = Math.min(1, Math.max(0, Math.abs(rect.top) / scrollableHeight));
+
+                    // 根据进度触发卡片显示
+                    cards.forEach((card, index) => {
+                        // 将 0-1 的进度分成 4 段，每段触发一张卡片
+                        const triggerPoint = (index + 1) * 0.2;
+
+                        if (progress >= triggerPoint) {
+                            card.classList.add('revealed');
+                        } else {
+                            card.classList.remove('revealed');
+                        }
+                    });
+
+                    // 当第四张卡片完全出现后，继续下滑时才显示跳转按钮
+                    if (decoBtn) {
+                        const fourthCardTrigger = 0.9;
+                        if (progress >= fourthCardTrigger) {
+                            decoBtn.classList.add('visible');
+                        } else {
+                            decoBtn.classList.remove('visible');
+                        }
+                    }
+                } else {
+                    // 如果往回滚出了容器，重置所有卡片
+                    cards.forEach(card => card.classList.remove('revealed'));
+                    if (decoBtn) {
+                        decoBtn.classList.remove('visible');
+                    }
+                }
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initIntersectionObserver();
+            initPortfolioScroll();
+            initInteractiveStar();
+            triggerConvoWiggle();
+
+            // 导航栏滚动效果
+            const navbar = document.querySelector('.navbar');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            document.getElementById('resumeLink').addEventListener('click', function(e) {
+                e.preventDefault();
+                const modal = document.getElementById('resumeModal');
+                const modalImg = document.getElementById('resumeModalImg');
+                modalImg.src = 'resources/简历.jpg';
+                modalImg.style.transform = 'scale(1)';
+                modal.style.display = 'flex';
+            });
+
+            document.getElementById('resumeModal').addEventListener('click', function() {
+                this.style.display = 'none';
+            });
+
+            document.getElementById('resumeCloseBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('resumeModal').style.display = 'none';
+            });
+
+            const modalImg = document.getElementById('resumeModalImg');
+            let scale = 1;
+            modalImg.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                scale += e.deltaY * -0.001;
+                scale = Math.min(Math.max(0.5, scale), 3);
+                this.style.transform = 'scale(' + scale + ')';
+            });
+
+            let isDragging = false;
+            let startX, startY, imgX = 0, imgY = 0;
+            modalImg.addEventListener('mousedown', function(e) {
+                if (e.button === 0 && scale > 1) {
+                    isDragging = true;
+                    startX = e.clientX - imgX;
+                    startY = e.clientY - imgY;
+                    this.style.cursor = 'grabbing';
+                }
+            });
+            modalImg.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                e.preventDefault();
+                imgX = e.clientX - startX;
+                imgY = e.clientY - startY;
+                this.style.transform = 'translate(' + imgX + 'px, ' + imgY + 'px) scale(' + scale + ')';
+            });
+            modalImg.addEventListener('mouseup', function() {
+                isDragging = false;
+                this.style.cursor = 'grab';
+            });
+            modalImg.addEventListener('mouseleave', function() {
+                isDragging = false;
+                this.style.cursor = 'grab';
+            });
+        });
+    </script>
+
+    <div id="resumeModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center;">
+        <span id="resumeCloseBtn" style="position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; z-index: 10001; line-height: 1;">&times;</span>
+        <img id="resumeModalImg" src="" style="max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); cursor: grab;">
+    </div>
+</body>
+</html>

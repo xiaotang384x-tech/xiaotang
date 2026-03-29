@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 小游戏</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=ZCOOL+KuaiLe&family=Zhi+Mang+Xing&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-cream: #F5EFE6;
+            --bg-blue: #A7C5D6;
+            --bg-pink: #F4D3D3;
+            --text-dark: #3A3532;
+            --red-vintage: #C13A3A;
+            --blue-vintage: #6B8EAD;
+            --yellow-vintage: #EEDB9A;
+            --font-serif: 'DM Serif Display', serif;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 12px calc(50vw - 47.5vw + 40px);
+            background-color: var(--bg-blue);
+            border-bottom: 1px dashed rgba(0,0,0,0.15);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .navbar.scrolled {
+            padding: 8px calc(50vw - 47.5vw + 40px);
+            background-color: rgba(167, 197, 214, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-bottom: none;
+        }
+
+        .nav-logo {
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 10px 22px;
+            border: 1px solid var(--text-dark);
+            border-radius: 25px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            background: var(--text-dark);
+            color: var(--bg-cream);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .nav-links a:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-blue);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            max-width: 95vw;
+            margin: 0 auto;
+            background-color: var(--bg-cream);
+            position: relative;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            background-blend-mode: overlay;
+            background-size: 100px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        .wavy-edge {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background-image: radial-gradient(circle at 10px 10px, var(--bg-blue) 10px, transparent 10.5px);
+            background-size: 20px 20px;
+            background-repeat: repeat-y;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .wavy-left { left: -10px; background-position: left center; }
+        .wavy-right { right: -10px; background-position: right center; transform: rotate(180deg); }
+
+        .cover-section {
+            min-height: calc(100vh - var(--nav-height, 0px));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 40px;
+            position: relative;
+            border-bottom: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .tape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px);
+            z-index: 5;
+        }
+        .tape-1 { width: 120px; height: 30px; top: 60px; left: 50%; transform: translateX(-50%) rotate(-2deg); }
+
+        .cover-icon {
+            font-size: 100px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .cover-title {
+            font-family: var(--font-serif);
+            font-size: clamp(4rem, 8vw, 7rem);
+            color: var(--red-vintage);
+            margin-bottom: 50px;
+            position: relative;
+            z-index: 2;
+            font-style: italic;
+            line-height: 1.1;
+        }
+
+        .cover-title::after {
+            display: none;
+        }
+
+        .cover-subtitle {
+            font-size: 22px;
+            color: var(--text-dark);
+            opacity: 0.85;
+            margin-bottom: 50px;
+            line-height: 1.8;
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .cover-btn {
+            padding: 20px 70px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4), 0 4px 0 #E85A8A;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cover-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cover-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 107, 157, 0.5), 0 6px 0 #E85A8A;
+        }
+
+        .cover-btn:hover::before {
+            left: 100%;
+        }
+
+        .cover-btn:active {
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4), 0 2px 0 #E85A8A;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.6;
+            animation: scrollBounce 2s infinite;
+        }
+
+        .scroll-hint span {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-family: 'ZCOOL KuaiLe', cursive;
+        }
+
+        .scroll-hint-icon {
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--text-dark);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .scroll-hint-icon::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--text-dark);
+            border-radius: 2px;
+            animation: scrollDot 2s infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.6; }
+            50% { transform: translateY(10px); opacity: 0.8; }
+        }
+
+        @keyframes scrollDot {
+            0%, 100% { top: 8px; opacity: 1; }
+            50% { top: 20px; opacity: 0.3; }
+        }
+
+        .decoration-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            font-size: 28px;
+            opacity: 0.5;
+            animation: starFloat 4s infinite ease-in-out;
+        }
+
+        .star:nth-child(1) { top: 15%; left: 8%; animation-delay: 0s; }
+        .star:nth-child(2) { top: 20%; right: 10%; animation-delay: 0.8s; }
+        .star:nth-child(3) { top: 35%; left: 5%; animation-delay: 1.6s; }
+        .star:nth-child(4) { top: 40%; right: 6%; animation-delay: 2.4s; }
+        .star:nth-child(5) { bottom: 30%; left: 12%; animation-delay: 0.4s; }
+        .star:nth-child(6) { bottom: 25%; right: 8%; animation-delay: 1.2s; }
+
+        @keyframes starFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+
+        @keyframes starShake {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-2px, -1px) rotate(-3deg); }
+            20% { transform: translate(2px, 1px) rotate(3deg); }
+            30% { transform: translate(-1px, 2px) rotate(-2deg); }
+            40% { transform: translate(1px, -1px) rotate(2deg); }
+            50% { transform: translate(-2px, 1px) rotate(-3deg); }
+            60% { transform: translate(2px, -1px) rotate(3deg); }
+            70% { transform: translate(-1px, -2px) rotate(-2deg); }
+            80% { transform: translate(1px, 1px) rotate(2deg); }
+            90% { transform: translate(-1px, 0px) rotate(-1deg); }
+        }
+
+        .star:hover {
+            animation: starShake 0.3s ease-in-out infinite;
+        }
+
+        .glow-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(255, 250, 205, 0.35) 0%, rgba(238, 219, 154, 0.2) 50%, transparent 80%);
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(20px);
+            left: -200px;
+            top: -200px;
+            mix-blend-mode: multiply;
+        }
+
+        .game-section {
+            padding: 40px 40px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-bottom: 2px dashed rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-section .decoration-stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .game-section .star {
+            position: absolute;
+            font-size: 36px;
+            opacity: 0.5;
+            animation: starFloat 4s infinite ease-in-out;
+        }
+
+        .game-section .star:nth-child(1) { top: 8%; left: 6%; animation-delay: 0s; }
+        .game-section .star:nth-child(2) { top: 18%; right: 8%; animation-delay: 0.5s; }
+        .game-section .star:nth-child(3) { top: 45%; left: 3%; animation-delay: 1.8s; }
+        .game-section .star:nth-child(4) { top: 60%; right: 5%; animation-delay: 1.2s; }
+        .game-section .star:nth-child(5) { bottom: 18%; left: 9%; animation-delay: 2.1s; }
+        .game-section .star:nth-child(6) { bottom: 28%; right: 3%; animation-delay: 0.7s; }
+
+        .game-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 32px;
+            color: var(--blue-vintage);
+            font-family: 'ZCOOL KuaiLe', cursive;
+            letter-spacing: 3px;
+            margin-bottom: 8px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: -10px;
+            right: -10px;
+            height: 8px;
+            background: var(--yellow-vintage);
+            z-index: -1;
+            transform: rotate(-1deg);
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-dark);
+            opacity: 0.7;
+        }
+
+        .game-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-display {
+            font-size: 24px;
+            color: var(--red-vintage);
+            font-family: 'ZCOOL KuaiLe', cursive;
+            letter-spacing: 2px;
+        }
+
+        canvas {
+            border: 4px solid var(--text-dark);
+            border-radius: 12px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.1);
+            background: #FFFEF5;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 16px 45px;
+            font-size: 18px;
+            background: linear-gradient(135deg, #6BCBFF 0%, #4A90E2 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(107, 203, 255, 0.4), 0 3px 0 #3A7BC8;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(107, 203, 255, 0.5), 0 5px 0 #3A7BC8;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(2px) scale(0.98);
+            box-shadow: 0 3px 15px rgba(107, 203, 255, 0.4), 0 2px 0 #3A7BC8;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4), 0 3px 0 #E85A8A;
+            display: none;
+        }
+
+        .btn-restart:hover {
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.5), 0 5px 0 #E85A8A;
+        }
+
+        .btn-restart:active {
+            box-shadow: 0 3px 15px rgba(255, 107, 157, 0.4), 0 2px 0 #E85A8A;
+        }
+
+        .instructions {
+            color: var(--text-dark);
+            opacity: 0.7;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-dark);
+            opacity: 0.6;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .cover-title {
+                font-size: 36px;
+                letter-spacing: 3px;
+            }
+
+            .cover-subtitle {
+                font-size: 18px;
+            }
+
+            .cover-icon {
+                font-size: 70px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+
+            .score-display {
+                font-size: 26px;
+            }
+
+            canvas {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .game-section {
+                padding: 60px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-logo" onclick="showView('home-view')">XIAO TANG</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#snakeSection">贪吃蛇</a></li>
+            <li><a href="#tankSection">坦克大作战</a></li>
+            <li><a href="#mineSection">扫雷</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <div class="wavy-edge wavy-left"></div>
+        <div class="wavy-edge wavy-right"></div>
+        <div class="glow-effect" id="glow-effect-0"></div>
+        <div class="glow-effect" id="glow-effect-1"></div>
+        <div class="glow-effect" id="glow-effect-2"></div>
+        <div class="glow-effect" id="glow-effect-3"></div>
+        <div class="glow-effect" id="glow-effect-4"></div>
+        <div class="glow-effect" id="glow-effect-5"></div>
+        <div class="glow-effect" id="glow-effect-6"></div>
+        <div class="glow-effect" id="glow-effect-7"></div>
+        <div class="glow-effect" id="glow-effect-8"></div>
+        <div class="glow-effect" id="glow-effect-9"></div>
+        <div class="glow-effect" id="glow-effect-10"></div>
+        <div class="glow-effect" id="glow-effect-11"></div>
+
+        <section class="cover-section" id="coverSection">
+            <div class="decoration-stars">
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+                <span class="star">🎮</span>
+                <span class="star">🎯</span>
+                <span class="star">🐍</span>
+                <span class="star">💫</span>
+            </div>
+
+            <div class="cover-icon">🎮</div>
+            <h1 class="cover-title">Games galaxy</h1>
+            <p class="cover-subtitle">
+                轻松有趣的小游戏合集<br>
+                快来一起度过欢乐时光吧～
+            </p>
+            <button class="cover-btn" id="coverBtn">开始探索 ✨</button>
+
+            <div class="scroll-hint">
+                <span>向下滑动</span>
+                <div class="scroll-hint-icon"></div>
+            </div>
+        </section>
+
+        <section class="game-section" id="snakeSection">
+            <div class="decoration-stars">
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+                <span class="star">🎮</span>
+                <span class="star">🎯</span>
+                <span class="star">🐍</span>
+                <span class="star">💫</span>
+            </div>
+            <div class="section-header">
+                <h2 class="section-title">🐍 贪吃蛇</h2>
+                <p class="section-subtitle">控制小蛇，吃掉美味的苹果吧！</p>
+            </div>
+
+            <div class="game-wrapper">
+                <div class="score-display" id="snakeScore">🍎 得分: 0</div>
+                <canvas id="snakeCanvas" width="700" height="500"></canvas>
+                <div class="game-controls">
+                    <button class="btn" id="snakeStartBtn">🎮 开始游戏</button>
+                    <button class="btn btn-restart" id="snakeRestartBtn">🌟 重新开始</button>
+                </div>
+                <p class="instructions">使用 方向键 或 WASD 控制小蛇移动</p>
+            </div>
+        </section>
+
+        <section class="game-section" id="tankSection">
+            <div class="decoration-stars">
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+                <span class="star">🎮</span>
+                <span class="star">🎯</span>
+                <span class="star">🐍</span>
+                <span class="star">💫</span>
+            </div>
+            <div class="section-header">
+                <h2 class="section-title">🎯 坦克大作战</h2>
+                <p class="section-subtitle">操控坦克，消灭所有敌方吧！</p>
+            </div>
+
+            <div class="game-wrapper">
+                <div class="score-display" id="tankScore">💥 分数: 0</div>
+                <canvas id="tankCanvas" width="700" height="500"></canvas>
+                <div class="game-controls">
+                    <button class="btn" id="tankStartBtn">🎮 开始游戏</button>
+                    <button class="btn btn-restart" id="tankRestartBtn">🌟 重新开始</button>
+                </div>
+                <p class="instructions">使用 WASD 移动，空格键 射击</p>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <p>© 2024 Games Galaxy - 轻松有趣的小游戏</p>
+        </footer>
+
+        <section class="game-section" id="mineSection">
+            <div class="decoration-stars">
+                <span class="star">⭐</span>
+                <span class="star">✨</span>
+                <span class="star">🎮</span>
+                <span class="star">🎯</span>
+                <span class="star">💣</span>
+                <span class="star">🚩</span>
+            </div>
+            <div class="section-header">
+                <h2 class="section-title">💣 扫雷</h2>
+                <p class="section-subtitle">找出所有安全格子，避开地雷！</p>
+            </div>
+
+            <div class="game-wrapper">
+                <div class="score-display" id="mineScore">🚩 剩余雷数: 10</div>
+                <canvas id="mineCanvas" width="540" height="420"></canvas>
+                <div class="game-controls">
+                    <button class="btn" id="mineStartBtn">🎮 开始游戏</button>
+                    <button class="btn btn-restart" id="mineRestartBtn">🌟 重新开始</button>
+                </div>
+                <p class="instructions">左键点击翻开格子，右键标记地雷</p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const coverBtn = document.getElementById('coverBtn');
+        const snakeSection = document.getElementById('snakeSection');
+
+        coverBtn.addEventListener('click', () => {
+            snakeSection.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        const snakeCanvas = document.getElementById('snakeCanvas');
+        const snakeCtx = snakeCanvas.getContext('2d');
+        const snakeScoreDisplay = document.getElementById('snakeScore');
+        const snakeRestartBtn = document.getElementById('snakeRestartBtn');
+        const snakeStartBtn = document.getElementById('snakeStartBtn');
+
+        const SNAKE_GRID = 30;
+        const SNAKE_COLS = snakeCanvas.width / SNAKE_GRID;
+        const SNAKE_ROWS = snakeCanvas.height / SNAKE_GRID;
+        const SNAKE_SPEED = 90;
+
+        let snake = [];
+        let snakeDir = { x: 1, y: 0 };
+        let nextSnakeDir = { x: 1, y: 0 };
+        let apple = { x: 0, y: 0 };
+        let snakeScore = 0;
+        let isSnakeActive = false;
+        let snakeStarted = false;
+        let snakeTimer = null;
+
+        function initSnake() {
+            snake = [
+                { x: 7, y: 12 },
+                { x: 6, y: 12 },
+                { x: 5, y: 12 }
+            ];
+            snakeDir = { x: 1, y: 0 };
+            nextSnakeDir = { x: 1, y: 0 };
+            snakeScore = 0;
+            isSnakeActive = false;
+            snakeStarted = false;
+            snakeScoreDisplay.textContent = '🍎 得分: 0';
+            snakeRestartBtn.style.display = 'none';
+            snakeStartBtn.style.display = 'inline-block';
+            spawnApple();
+            if (snakeTimer) clearInterval(snakeTimer);
+            drawSnake();
+        }
+
+        function startSnake() {
+            if (snakeStarted) return;
+            snakeStarted = true;
+            isSnakeActive = true;
+            snakeStartBtn.style.display = 'none';
+            snakeTimer = setInterval(snakeLoop, SNAKE_SPEED);
+        }
+
+        function spawnApple() {
+            do {
+                apple.x = Math.floor(Math.random() * SNAKE_COLS);
+                apple.y = Math.floor(Math.random() * SNAKE_ROWS);
+            } while (isOnSnake(apple.x, apple.y));
+        }
+
+        function isOnSnake(x, y) {
+            return snake.some(s => s.x === x && s.y === y);
+        }
+
+        function snakeLoop() {
+            if (!isSnakeActive) return;
+            snakeDir = { ...nextSnakeDir };
+            const head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
+
+            if (head.x < 0 || head.x >= SNAKE_COLS || head.y < 0 || head.y >= SNAKE_ROWS) {
+                snakeGameOver();
+                return;
+            }
+            if (isOnSnake(head.x, head.y)) {
+                snakeGameOver();
+                return;
+            }
+
+            snake.unshift(head);
+            if (head.x === apple.x && head.y === apple.y) {
+                snakeScore += 10;
+                snakeScoreDisplay.textContent = '🍎 得分: ' + snakeScore;
+                spawnApple();
+            } else {
+                snake.pop();
+            }
+            drawSnake();
+        }
+
+        function drawSnake() {
+            snakeCtx.fillStyle = '#FFF9E6';
+            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+            snakeCtx.strokeStyle = '#FFF0CC';
+            snakeCtx.lineWidth = 0.5;
+            for (let i = 0; i <= SNAKE_COLS; i++) {
+                snakeCtx.beginPath();
+                snakeCtx.moveTo(i * SNAKE_GRID, 0);
+                snakeCtx.lineTo(i * SNAKE_GRID, snakeCanvas.height);
+                snakeCtx.stroke();
+            }
+            for (let i = 0; i <= SNAKE_ROWS; i++) {
+                snakeCtx.beginPath();
+                snakeCtx.moveTo(0, i * SNAKE_GRID);
+                snakeCtx.lineTo(snakeCanvas.width, i * SNAKE_GRID);
+                snakeCtx.stroke();
+            }
+
+            drawSnakeApple();
+
+            snake.forEach((s, i) => {
+                const x = s.x * SNAKE_GRID;
+                const y = s.y * SNAKE_GRID;
+                if (i === 0) {
+                    drawSnakeHead(x, y);
+                } else {
+                    drawSnakeBody(x, y, i);
+                }
+            });
+        }
+
+        function drawSnakeHead(x, y) {
+            const p = 1;
+            const s = SNAKE_GRID - p * 2;
+            snakeCtx.fillStyle = '#7ED56F';
+            snakeCtx.beginPath();
+            snakeCtx.roundRect(x + p, y + p, s, s, 4);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = '#333';
+            snakeCtx.beginPath();
+            snakeCtx.arc(x + 6, y + 8, 2, 0, Math.PI * 2);
+            snakeCtx.fill();
+            snakeCtx.beginPath();
+            snakeCtx.arc(x + 14, y + 8, 2, 0, Math.PI * 2);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = 'white';
+            snakeCtx.beginPath();
+            snakeCtx.arc(x + 6, y + 7, 0.8, 0, Math.PI * 2);
+            snakeCtx.fill();
+            snakeCtx.beginPath();
+            snakeCtx.arc(x + 14, y + 7, 0.8, 0, Math.PI * 2);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = '#FFB6C1';
+            snakeCtx.beginPath();
+            snakeCtx.ellipse(x + 5, y + 15, 2, 1.5, 0, 0, Math.PI * 2);
+            snakeCtx.fill();
+            snakeCtx.beginPath();
+            snakeCtx.ellipse(x + 15, y + 15, 2, 1.5, 0, 0, Math.PI * 2);
+            snakeCtx.fill();
+        }
+
+        function drawSnakeBody(x, y, i) {
+            const p = 1;
+            const s = SNAKE_GRID - p * 2;
+            snakeCtx.fillStyle = i % 2 === 0 ? '#55C044' : '#6FD35E';
+            snakeCtx.beginPath();
+            snakeCtx.roundRect(x + p, y + p, s, s, 3);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            snakeCtx.beginPath();
+            snakeCtx.roundRect(x + p + 2, y + p + 2, 4, 4, 2);
+            snakeCtx.fill();
+        }
+
+        function drawSnakeApple() {
+            const x = apple.x * SNAKE_GRID;
+            const y = apple.y * SNAKE_GRID;
+            const p = 1;
+
+            snakeCtx.fillStyle = '#8B4513';
+            snakeCtx.fillRect(x + SNAKE_GRID / 2 - 1, y + p, 2, 3);
+
+            snakeCtx.fillStyle = '#4CAF50';
+            snakeCtx.beginPath();
+            snakeCtx.ellipse(x + SNAKE_GRID / 2 + 1, y + p, 3, 4, Math.PI / 6, 0, Math.PI * 2);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = '#FF4757';
+            snakeCtx.beginPath();
+            snakeCtx.roundRect(x + p, y + p, SNAKE_GRID - p * 2, SNAKE_GRID - p * 2, 3);
+            snakeCtx.fill();
+
+            snakeCtx.fillStyle = 'rgba(255,255,255,0.4)';
+            snakeCtx.beginPath();
+            snakeCtx.roundRect(x + p + 2, y + p + 2, 4, 4, 2);
+            snakeCtx.fill();
+        }
+
+        function snakeGameOver() {
+            isSnakeActive = false;
+            snakeStarted = false;
+            clearInterval(snakeTimer);
+            snakeCtx.fillStyle = 'rgba(255,255,255,0.85)';
+            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+            snakeCtx.fillStyle = '#FF6B9D';
+            snakeCtx.font = 'bold 36px Comic Sans MS';
+            snakeCtx.textAlign = 'center';
+            snakeCtx.fillText('游戏结束!', snakeCanvas.width / 2, snakeCanvas.height / 2 - 30);
+            snakeCtx.fillStyle = '#7ED56F';
+            snakeCtx.font = '24px Comic Sans MS';
+            snakeCtx.fillText('🍎 最终得分: ' + snakeScore, snakeCanvas.width / 2, snakeCanvas.height / 2 + 10);
+            snakeRestartBtn.style.display = 'inline-block';
+        }
+
+        const tankCanvas = document.getElementById('tankCanvas');
+        const tankCtx = tankCanvas.getContext('2d');
+        const tankScoreDisplay = document.getElementById('tankScore');
+        const tankRestartBtn = document.getElementById('tankRestartBtn');
+        const tankStartBtn = document.getElementById('tankStartBtn');
+
+        const TANK_SIZE = 22;
+        const TANK_BULLET = 5;
+        const TANK_PLAYER_SPEED = 3;
+        const TANK_ENEMY_SPEED = 2;
+        const TANK_PLAYER_BULLET_SPEED = 5;
+        const TANK_ENEMY_BULLET_SPEED = 4;
+        const TANK_SHOOT_COOL = 200;
+        const TANK_ENEMY_SHOOT_MIN = 1500;
+        const TANK_ENEMY_SHOOT_MAX = 2500;
+        const TANK_ENEMY_MOVE = 600;
+
+        const TANK_DIR = { UP: 0, DOWN: 1, LEFT: 2, RIGHT: 3 };
+
+        let tankPlayer = null;
+        let tankEnemies = [];
+        let tankBullets = [];
+        let tankWalls = [];
+        let tankBoundary = [];
+        let tankScore = 0;
+        let tankActive = false;
+        let tankStarted = false;
+        let tankTimer = null;
+
+        function createTankWalls() {
+            return [
+                { x: 120, y: 80, w: 44, h: 44 },
+                { x: 250, y: 150, w: 44, h: 44 },
+                { x: 400, y: 100, w: 44, h: 44 },
+                { x: 180, y: 280, w: 44, h: 44 },
+                { x: 350, y: 250, w: 44, h: 44 },
+                { x: 500, y: 300, w: 44, h: 44 },
+                { x: 100, y: 380, w: 44, h: 44 },
+                { x: 300, y: 380, w: 44, h: 44 }
+            ];
+        }
+
+        function createTankBoundary() {
+            const t = 10;
+            return [
+                { x: 0, y: 0, w: tankCanvas.width, h: t },
+                { x: 0, y: tankCanvas.height - t, w: tankCanvas.width, h: t },
+                { x: 0, y: 0, w: t, h: tankCanvas.height },
+                { x: tankCanvas.width - t, y: 0, w: t, h: tankCanvas.height }
+            ];
+        }
+
+        function initTank() {
+            tankWalls = createTankWalls();
+            tankBoundary = createTankBoundary();
+            tankPlayer = {
+                x: 80, y: 350, w: TANK_SIZE, h: TANK_SIZE,
+                dir: TANK_DIR.RIGHT,
+                lastShot: 0,
+                bullet: null
+            };
+            tankEnemies = [
+                { x: 450, y: 80, w: TANK_SIZE, h: TANK_SIZE, dir: TANK_DIR.DOWN, lastShot: Date.now(), shootInt: TANK_ENEMY_SHOOT_MIN + Math.random() * 1000, lastMove: Date.now(), moveInt: TANK_ENEMY_MOVE, bullet: null },
+                { x: 520, y: 180, w: TANK_SIZE, h: TANK_SIZE, dir: TANK_DIR.LEFT, lastShot: Date.now(), shootInt: TANK_ENEMY_SHOOT_MIN + Math.random() * 1000, lastMove: Date.now(), moveInt: TANK_ENEMY_MOVE, bullet: null },
+                { x: 450, y: 350, w: TANK_SIZE, h: TANK_SIZE, dir: TANK_DIR.UP, lastShot: Date.now(), shootInt: TANK_ENEMY_SHOOT_MIN + Math.random() * 1000, lastMove: Date.now(), moveInt: TANK_ENEMY_MOVE, bullet: null }
+            ];
+            tankBullets = [];
+            tankScore = 0;
+            tankActive = false;
+            tankStarted = false;
+            tankScoreDisplay.textContent = '💥 分数: 0';
+            tankRestartBtn.style.display = 'none';
+            tankStartBtn.style.display = 'inline-block';
+            if (tankTimer) clearInterval(tankTimer);
+            drawTank();
+        }
+
+        function startTank() {
+            if (tankStarted) return;
+            tankStarted = true;
+            tankActive = true;
+            tankStartBtn.style.display = 'none';
+            tankTimer = setInterval(tankLoop, 1000 / 60);
+        }
+
+        function tankCollide(r1, r2) {
+            return r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y;
+        }
+
+        function tankCanMove(e, nx, ny, isP) {
+            const t = { x: nx, y: ny, w: e.w, h: e.h };
+            for (let w of tankWalls) if (tankCollide(t, w)) return false;
+            for (let b of tankBoundary) if (tankCollide(t, b)) return false;
+            if (isP) {
+                for (let en of tankEnemies) if (tankCollide(t, en)) return false;
+            } else {
+                if (tankPlayer && tankCollide(t, tankPlayer)) return false;
+                for (let en of tankEnemies) if (en !== e && tankCollide(t, en)) return false;
+            }
+            return true;
+        }
+
+        function tankShoot(e, isP) {
+            const now = Date.now();
+            if (!isP && e.bullet) return;
+            if (isP) {
+                if (now - e.lastShot < TANK_SHOOT_COOL) return;
+                e.lastShot = now;
+            } else {
+                if (now - e.lastShot < e.shootInt) return;
+                e.lastShot = now;
+                e.shootInt = TANK_ENEMY_SHOOT_MIN + Math.random() * (TANK_ENEMY_SHOOT_MAX - TANK_ENEMY_SHOOT_MIN);
+            }
+            const off = TANK_SIZE / 2 + TANK_BULLET / 2 + 2;
+            let bx, by;
+            switch (e.dir) {
+                case TANK_DIR.UP: bx = e.x + TANK_SIZE / 2 - TANK_BULLET / 2; by = e.y - off; break;
+                case TANK_DIR.DOWN: bx = e.x + TANK_SIZE / 2 - TANK_BULLET / 2; by = e.y + off; break;
+                case TANK_DIR.LEFT: bx = e.x - off; by = e.y + TANK_SIZE / 2 - TANK_BULLET / 2; break;
+                case TANK_DIR.RIGHT: bx = e.x + off; by = e.y + TANK_SIZE / 2 - TANK_BULLET / 2; break;
+            }
+            const b = { x: bx, y: by, w: TANK_BULLET, h: TANK_BULLET, dir: e.dir, speed: isP ? TANK_PLAYER_BULLET_SPEED : TANK_ENEMY_BULLET_SPEED, isPlayer: isP };
+            tankBullets.push(b);
+            if (!isP) e.bullet = b;
+        }
+
+        const TANK_KEYS = { w: false, a: false, s: false, d: false, space: false };
+
+        function tankLoop() {
+            if (!tankActive) return;
+
+            let nx = tankPlayer.x, ny = tankPlayer.y;
+            if (TANK_KEYS.w) { ny -= TANK_PLAYER_SPEED; tankPlayer.dir = TANK_DIR.UP; }
+            else if (TANK_KEYS.s) { ny += TANK_PLAYER_SPEED; tankPlayer.dir = TANK_DIR.DOWN; }
+            else if (TANK_KEYS.a) { nx -= TANK_PLAYER_SPEED; tankPlayer.dir = TANK_DIR.LEFT; }
+            else if (TANK_KEYS.d) { nx += TANK_PLAYER_SPEED; tankPlayer.dir = TANK_DIR.RIGHT; }
+            if (TANK_KEYS.w || TANK_KEYS.a || TANK_KEYS.s || TANK_KEYS.d) {
+                if (tankCanMove(tankPlayer, nx, ny, true)) {
+                    tankPlayer.x = nx;
+                    tankPlayer.y = ny;
+                }
+            }
+            if (TANK_KEYS.space) tankShoot(tankPlayer, true);
+
+            const now = Date.now();
+            tankEnemies.forEach(en => {
+                if (now - en.lastMove >= en.moveInt) {
+                    en.dir = Math.floor(Math.random() * 4);
+                    en.lastMove = now;
+                    en.moveInt = TANK_ENEMY_MOVE + Math.random() * 200;
+                }
+                let enx = en.x, eny = en.y;
+                switch (en.dir) {
+                    case TANK_DIR.UP: eny -= TANK_ENEMY_SPEED; break;
+                    case TANK_DIR.DOWN: eny += TANK_ENEMY_SPEED; break;
+                    case TANK_DIR.LEFT: enx -= TANK_ENEMY_SPEED; break;
+                    case TANK_DIR.RIGHT: enx += TANK_ENEMY_SPEED; break;
+                }
+                if (!tankCanMove(en, enx, eny, false)) {
+                    en.dir = (en.dir + 2) % 4;
+                } else {
+                    en.x = enx;
+                    en.y = eny;
+                }
+                if (Math.random() < 0.015) tankShoot(en, false);
+            });
+
+            for (let i = tankBullets.length - 1; i >= 0; i--) {
+                const b = tankBullets[i];
+                switch (b.dir) {
+                    case TANK_DIR.UP: b.y -= b.speed; break;
+                    case TANK_DIR.DOWN: b.y += b.speed; break;
+                    case TANK_DIR.LEFT: b.x -= b.speed; break;
+                    case TANK_DIR.RIGHT: b.x += b.speed; break;
+                }
+                let hit = false;
+                if (b.x < 0 || b.x > tankCanvas.width || b.y < 0 || b.y > tankCanvas.height) hit = true;
+                for (let w of tankWalls) if (tankCollide(b, w)) { hit = true; break; }
+                for (let bb of tankBoundary) if (tankCollide(b, bb)) { hit = true; break; }
+                if (b.isPlayer) {
+                    for (let j = tankEnemies.length - 1; j >= 0; j--) {
+                        if (tankCollide(b, tankEnemies[j])) {
+                            tankEnemies.splice(j, 1);
+                            tankScore += 100;
+                            tankScoreDisplay.textContent = '💥 分数: ' + tankScore;
+                            if (tankEnemies.length === 0) {
+                                tankActive = false;
+                                tankDrawEnd(true);
+                                return;
+                            }
+                            hit = true;
+                            break;
+                        }
+                    }
+                } else {
+                    if (tankPlayer && tankCollide(b, tankPlayer)) {
+                        tankActive = false;
+                        tankDrawEnd(false);
+                        return;
+                    }
+                }
+                if (hit) {
+                    if (b.isPlayer && tankPlayer) tankPlayer.bullet = null;
+                    if (!b.isPlayer) tankEnemies.forEach(e => { if (e.bullet === b) e.bullet = null; });
+                    tankBullets.splice(i, 1);
+                }
+            }
+
+            drawTank();
+        }
+
+        function drawTank() {
+            tankCtx.fillStyle = '#FFF9E6';
+            tankCtx.fillRect(0, 0, tankCanvas.width, tankCanvas.height);
+
+            tankCtx.strokeStyle = '#FFF0CC';
+            tankCtx.lineWidth = 0.5;
+            for (let i = 0; i <= tankCanvas.width / TANK_SIZE; i++) {
+                tankCtx.beginPath();
+                tankCtx.moveTo(i * TANK_SIZE, 0);
+                tankCtx.lineTo(i * TANK_SIZE, tankCanvas.height);
+                tankCtx.stroke();
+            }
+            for (let i = 0; i <= tankCanvas.height / TANK_SIZE; i++) {
+                tankCtx.beginPath();
+                tankCtx.moveTo(0, i * TANK_SIZE);
+                tankCtx.lineTo(tankCanvas.width, i * TANK_SIZE);
+                tankCtx.stroke();
+            }
+
+            tankCtx.fillStyle = '#888';
+            tankWalls.forEach(w => {
+                tankCtx.beginPath();
+                tankCtx.roundRect(w.x, w.y, w.w, w.h, 4);
+                tankCtx.fill();
+            });
+            tankCtx.fillStyle = '#555';
+            tankBoundary.forEach(b => tankCtx.fillRect(b.x, b.y, b.w, b.h));
+
+            tankEnemies.forEach(en => drawTankTank(en, '#FF6B6B', '#666'));
+            if (tankPlayer) drawTankTank(tankPlayer, '#6BCBFF', '#FFF');
+
+            tankBullets.forEach(b => {
+                tankCtx.fillStyle = b.isPlayer ? '#FFD93D' : '#FF4757';
+                tankCtx.beginPath();
+                tankCtx.roundRect(b.x, b.y, b.w, b.h, 2);
+                tankCtx.fill();
+            });
+        }
+
+        function drawTankTank(t, color, barrel) {
+            tankCtx.save();
+            tankCtx.translate(t.x + t.w / 2, t.y + t.h / 2);
+            const angle = [0, Math.PI, -Math.PI / 2, Math.PI / 2][t.dir];
+            tankCtx.rotate(angle);
+
+            tankCtx.fillStyle = color;
+            tankCtx.beginPath();
+            tankCtx.roundRect(-t.w / 2, -t.h / 2, t.w, t.h, 4);
+            tankCtx.fill();
+
+            tankCtx.fillStyle = barrel;
+            tankCtx.fillRect(-3, -t.h / 2 - 8, 6, 10);
+
+            tankCtx.fillStyle = 'rgba(255,255,255,0.3)';
+            tankCtx.beginPath();
+            tankCtx.roundRect(-t.w / 2 + 3, -t.h / 2 + 3, 6, 6, 2);
+            tankCtx.fill();
+
+            tankCtx.restore();
+        }
+
+        function tankDrawEnd(isWin) {
+            clearInterval(tankTimer);
+            tankActive = false;
+            tankStarted = false;
+            tankCtx.fillStyle = 'rgba(255,255,255,0.85)';
+            tankCtx.fillRect(0, 0, tankCanvas.width, tankCanvas.height);
+            tankCtx.fillStyle = isWin ? '#7ED56F' : '#FF6B9D';
+            tankCtx.font = 'bold 36px Comic Sans MS';
+            tankCtx.textAlign = 'center';
+            tankCtx.fillText(isWin ? '你赢了!' : '游戏结束!', tankCanvas.width / 2, tankCanvas.height / 2 - 30);
+            tankCtx.fillStyle = '#6BCBFF';
+            tankCtx.font = '24px Comic Sans MS';
+            tankCtx.fillText('💥 最终分数: ' + tankScore, tankCanvas.width / 2, tankCanvas.height / 2 + 15);
+            tankRestartBtn.style.display = 'inline-block';
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!isSnakeActive || !snakeStarted) return;
+            switch (e.code) {
+                case 'ArrowUp': case 'KeyW': if (snakeDir.y !== 1) nextSnakeDir = { x: 0, y: -1 }; e.preventDefault(); break;
+                case 'ArrowDown': case 'KeyS': if (snakeDir.y !== -1) nextSnakeDir = { x: 0, y: 1 }; e.preventDefault(); break;
+                case 'ArrowLeft': case 'KeyA': if (snakeDir.x !== 1) nextSnakeDir = { x: -1, y: 0 }; e.preventDefault(); break;
+                case 'ArrowRight': case 'KeyD': if (snakeDir.x !== -1) nextSnakeDir = { x: 1, y: 0 }; e.preventDefault(); break;
+            }
+        });
+
+        snakeRestartBtn.addEventListener('click', initSnake);
+        snakeStartBtn.addEventListener('click', startSnake);
+
+        document.addEventListener('keydown', (e) => {
+            if (!tankActive || !tankStarted) return;
+            switch (e.code) {
+                case 'KeyW': TANK_KEYS.w = true; e.preventDefault(); break;
+                case 'KeyS': TANK_KEYS.s = true; e.preventDefault(); break;
+                case 'KeyA': TANK_KEYS.a = true; e.preventDefault(); break;
+                case 'KeyD': TANK_KEYS.d = true; e.preventDefault(); break;
+                case 'Space': TANK_KEYS.space = true; e.preventDefault(); break;
+            }
+        });
+        document.addEventListener('keyup', (e) => {
+            switch (e.code) {
+                case 'KeyW': TANK_KEYS.w = false; break;
+                case 'KeyS': TANK_KEYS.s = false; break;
+                case 'KeyA': TANK_KEYS.a = false; break;
+                case 'KeyD': TANK_KEYS.d = false; break;
+                case 'Space': TANK_KEYS.space = false; break;
+            }
+        });
+
+        tankRestartBtn.addEventListener('click', initTank);
+        tankStartBtn.addEventListener('click', startTank);
+
+        initSnake();
+        initTank();
+
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        const mainContainer = document.querySelector('.main-container');
+        const glowEffects = [];
+        const positionHistory = [];
+        const maxHistory = 12;
+
+        for (let i = 0; i < 12; i++) {
+            const glow = document.getElementById('glow-effect-' + i);
+            if (glow) glowEffects.push(glow);
+        }
+
+        mainContainer.addEventListener('mousemove', (e) => {
+            const rect = mainContainer.getBoundingClientRect();
+            const glowX = e.clientX - rect.left - 25;
+            const glowY = e.clientY - rect.top - 25;
+
+            positionHistory.unshift({ x: glowX, y: glowY });
+            if (positionHistory.length > maxHistory) {
+                positionHistory.pop();
+            }
+
+            glowEffects.forEach((glow, index) => {
+                if (glow && positionHistory[index]) {
+                    const pos = positionHistory[index];
+                    const scale = 1 - (index * 0.05);
+                    const opacity = 1 - (index * 0.07);
+                    glow.style.left = pos.x + 'px';
+                    glow.style.top = pos.y + 'px';
+                    glow.style.transform = `scale(${scale})`;
+                    glow.style.opacity = opacity;
+                }
+            });
+        });
+
+        const mineCanvas = document.getElementById('mineCanvas');
+        const mineCtx = mineCanvas.getContext('2d');
+        const mineScoreDisplay = document.getElementById('mineScore');
+        const mineRestartBtn = document.getElementById('mineRestartBtn');
+        const mineStartBtn = document.getElementById('mineStartBtn');
+
+        const MINE_ROWS = 14;
+        const MINE_COLS = 18;
+        const MINE_SIZE = 30;
+        const MINE_COUNT = 10;
+
+        let mineBoard = [];
+        let revealed = [];
+        let flagged = [];
+        let mineStarted = false;
+        let gameOver = false;
+        let safeCells;
+
+        function initMinesweeper() {
+            mineBoard = [];
+            revealed = [];
+            flagged = [];
+            mineStarted = false;
+            gameOver = false;
+            safeCells = MINE_ROWS * MINE_COLS - MINE_COUNT;
+
+            for (let r = 0; r < MINE_ROWS; r++) {
+                mineBoard[r] = [];
+                revealed[r] = [];
+                flagged[r] = [];
+                for (let c = 0; c < MINE_COLS; c++) {
+                    mineBoard[r][c] = 0;
+                    revealed[r][c] = false;
+                    flagged[r][c] = false;
+                }
+            }
+
+            let minesPlaced = 0;
+            while (minesPlaced < MINE_COUNT) {
+                const r = Math.floor(Math.random() * MINE_ROWS);
+                const c = Math.floor(Math.random() * MINE_COLS);
+                if (mineBoard[r][c] !== -1) {
+                    mineBoard[r][c] = -1;
+                    minesPlaced++;
+                }
+            }
+
+            for (let r = 0; r < MINE_ROWS; r++) {
+                for (let c = 0; c < MINE_COLS; c++) {
+                    if (mineBoard[r][c] === -1) continue;
+                    let count = 0;
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            const nr = r + dr;
+                            const nc = c + dc;
+                            if (nr >= 0 && nr < MINE_ROWS && nc >= 0 && nc < MINE_COLS && mineBoard[nr][nc] === -1) {
+                                count++;
+                            }
+                        }
+                    }
+                    mineBoard[r][c] = count;
+                }
+            }
+
+            mineScoreDisplay.textContent = '🚩 剩余雷数: ' + MINE_COUNT;
+            mineRestartBtn.style.display = 'none';
+            mineStartBtn.style.display = 'inline-block';
+            drawMinesweeper();
+        }
+
+        function startMinesweeper() {
+            if (mineStarted) return;
+            mineStarted = true;
+            mineStartBtn.style.display = 'none';
+        }
+
+        function drawMinesweeper() {
+            mineCtx.fillStyle = '#FFFEF5';
+            mineCtx.fillRect(0, 0, mineCanvas.width, mineCanvas.height);
+
+            for (let r = 0; r < MINE_ROWS; r++) {
+                for (let c = 0; c < MINE_COLS; c++) {
+                    const x = c * MINE_SIZE;
+                    const y = r * MINE_SIZE;
+
+                    mineCtx.strokeStyle = '#ddd';
+                    mineCtx.lineWidth = 1;
+                    mineCtx.strokeRect(x, y, MINE_SIZE, MINE_SIZE);
+
+                    if (revealed[r][c]) {
+                        mineCtx.fillStyle = '#f0f0f0';
+                        mineCtx.fillRect(x + 1, y + 1, MINE_SIZE - 2, MINE_SIZE - 2);
+
+                        if (mineBoard[r][c] === -1) {
+                            mineCtx.fillStyle = '#C13A3A';
+                            mineCtx.beginPath();
+                            mineCtx.arc(x + MINE_SIZE / 2, y + MINE_SIZE / 2, MINE_SIZE / 3, 0, Math.PI * 2);
+                            mineCtx.fill();
+                        } else if (mineBoard[r][c] > 0) {
+                            mineCtx.fillStyle = '#6B8EAD';
+                            mineCtx.font = 'bold 16px Arial';
+                            mineCtx.textAlign = 'center';
+                            mineCtx.textBaseline = 'middle';
+                            mineCtx.fillText(mineBoard[r][c], x + MINE_SIZE / 2, y + MINE_SIZE / 2);
+                        }
+                    } else if (flagged[r][c]) {
+                        mineCtx.fillStyle = '#FF6B9D';
+                        mineCtx.font = '16px Arial';
+                        mineCtx.textAlign = 'center';
+                        mineCtx.textBaseline = 'middle';
+                        mineCtx.fillText('🚩', x + MINE_SIZE / 2, y + MINE_SIZE / 2);
+                    }
+                }
+            }
+        }
+
+        function revealCell(r, c) {
+            if (r < 0 || r >= MINE_ROWS || c < 0 || c >= MINE_COLS) return;
+            if (revealed[r][c] || flagged[r][c]) return;
+            if (gameOver) return;
+
+            revealed[r][c] = true;
+            safeCells--;
+
+            if (mineBoard[r][c] === -1) {
+                gameOver = true;
+                revealAllMines();
+                mineCtx.fillStyle = 'rgba(0,0,0,0.5)';
+                mineCtx.fillRect(0, 0, mineCanvas.width, mineCanvas.height);
+                mineCtx.fillStyle = '#C13A3A';
+                mineCtx.font = 'bold 36px Arial';
+                mineCtx.textAlign = 'center';
+                mineCtx.textBaseline = 'middle';
+                mineCtx.fillText('💥 游戏结束!', mineCanvas.width / 2, mineCanvas.height / 2);
+                mineRestartBtn.style.display = 'inline-block';
+                return;
+            }
+
+            if (safeCells === 0) {
+                gameOver = true;
+                mineCtx.fillStyle = 'rgba(0,0,0,0.5)';
+                mineCtx.fillRect(0, 0, mineCanvas.width, mineCanvas.height);
+                mineCtx.fillStyle = '#6B8EAD';
+                mineCtx.font = 'bold 36px Arial';
+                mineCtx.textAlign = 'center';
+                mineCtx.textBaseline = 'middle';
+                mineCtx.fillText('🎉 你赢了!', mineCanvas.width / 2, mineCanvas.height / 2);
+                mineRestartBtn.style.display = 'inline-block';
+                return;
+            }
+
+            if (mineBoard[r][c] === 0) {
+                for (let dr = -1; dr <= 1; dr++) {
+                    for (let dc = -1; dc <= 1; dc++) {
+                        revealCell(r + dr, c + dc);
+                    }
+                }
+            }
+            drawMinesweeper();
+        }
+
+        function revealAllMines() {
+            for (let r = 0; r < MINE_ROWS; r++) {
+                for (let c = 0; c < MINE_COLS; c++) {
+                    if (mineBoard[r][c] === -1) {
+                        revealed[r][c] = true;
+                    }
+                }
+            }
+            drawMinesweeper();
+        }
+
+        function toggleFlag(r, c, e) {
+            e.preventDefault();
+            if (revealed[r][c] || gameOver) return;
+            flagged[r][c] = !flagged[r][c];
+
+            let flagCount = 0;
+            for (let r = 0; r < MINE_ROWS; r++) {
+                for (let c = 0; c < MINE_COLS; c++) {
+                    if (flagged[r][c]) flagCount++;
+                }
+            }
+            mineScoreDisplay.textContent = '🚩 剩余雷数: ' + (MINE_COUNT - flagCount);
+            drawMinesweeper();
+        }
+
+        mineCanvas.addEventListener('click', (e) => {
+            if (!mineStarted || gameOver) return;
+            const rect = mineCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const c = Math.floor(x / MINE_SIZE);
+            const r = Math.floor(y / MINE_SIZE);
+            revealCell(r, c);
+        });
+
+        mineCanvas.addEventListener('contextmenu', (e) => {
+            if (!mineStarted || gameOver) return;
+            const rect = mineCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const c = Math.floor(x / MINE_SIZE);
+            const r = Math.floor(y / MINE_SIZE);
+            toggleFlag(r, c, e);
+        });
+
+        mineStartBtn.addEventListener('click', startMinesweeper);
+        mineRestartBtn.addEventListener('click', initMinesweeper);
+        initMinesweeper();
+    </script>
+</body>
+</html>
